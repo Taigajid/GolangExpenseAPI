@@ -28,7 +28,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	user := models.User{Username: body.Username, Password: string(hash)}
+	user := models.User{Username: body.Username, Password: hash}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
@@ -57,9 +57,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	err := bcrypt.CompareHashAndPassword(user.Password, []byte(body.Password))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		return
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
