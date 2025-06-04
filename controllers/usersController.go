@@ -22,13 +22,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
-		return
-	}
-
-	user := models.User{Username: body.Username, Password: string(hash)}
+	user := models.User{Username: body.Username, Password: body.Password}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
